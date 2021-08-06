@@ -66,7 +66,7 @@ class ModelDataHandler: NSObject {
   let threadCount: Int
   let threadCountLimit = 10
 
-  let threshold: Float = 0.5
+  let threshold: Float = 0.2
 
   // MARK: Model parameters
   let batchSize = 1
