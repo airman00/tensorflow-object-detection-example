@@ -34,11 +34,27 @@ struct Inference {
 /// Information about a model file or labels file.
 typealias FileInfo = (name: String, extension: String)
 
-/// Information about the MobileNet SSD model.
+
+// ===== Uncomment which model you want to use =======
+
+//// To Select MobileNet, uncomment this block
+//enum MobileNetSSD {
+//  static let modelInfo: FileInfo = (name: "mobilenet", extension: "tflite")
+//  static let labelsInfo: FileInfo = (name: "labelmap", extension: "txt")
+//}
+//let inputWidth = 300
+//let inputHeight = 300
+
+// To Select VertexAI, uncomment this block
 enum MobileNetSSD {
-  static let modelInfo: FileInfo = (name: "detect", extension: "tflite")
+  static let modelInfo: FileInfo = (name: "vertex_mlir", extension: "tflite")
   static let labelsInfo: FileInfo = (name: "labelmap", extension: "txt")
 }
+let inputWidth = 320
+let inputHeight = 320
+
+
+
 
 /// This class handles all data preprocessing and makes calls to run inference on a given frame
 /// by invoking the `Interpreter`. It then formats the inferences obtained and returns the top N
@@ -55,8 +71,7 @@ class ModelDataHandler: NSObject {
   // MARK: Model parameters
   let batchSize = 1
   let inputChannels = 3
-  let inputWidth = 300
-  let inputHeight = 300
+    
 
   // image mean and std for floating model, should be consistent with parameters used in model training
   let imageMean: Float = 127.5
@@ -104,9 +119,19 @@ class ModelDataHandler: NSObject {
     self.threadCount = threadCount
     var options = Interpreter.Options()
     options.threadCount = threadCount
+    
+    let coreMLDelegate = CoreMLDelegate()
+
+    
     do {
       // Create the `Interpreter`.
-      interpreter = try Interpreter(modelPath: modelPath, options: options)
+     // note: Core ML delegate will only be created for devices with Neural Engine
+     if coreMLDelegate != nil {
+       interpreter = try Interpreter(modelPath: modelPath,
+                                     delegates: [coreMLDelegate!])
+     } else {
+       interpreter = try Interpreter(modelPath: modelPath)
+     }
       // Allocate memory for the model's input `Tensor`s.
       try interpreter.allocateTensors()
     } catch let error {

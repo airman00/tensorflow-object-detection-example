@@ -6,6 +6,6 @@ target 'ObjectDetection' do
   use_frameworks!
 
   # Pods for ObjectDetection
-  pod 'TensorFlowLiteSwift'
+  pod 'TensorFlowLiteSwift', '~> 0.0.1-nightly', :subspecs => ['CoreML','Metal']
 
 end
