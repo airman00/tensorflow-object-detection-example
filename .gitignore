@@ -1,6 +1,3 @@
-# TensorFlow Lite model
-*.tflite
-
 # Swift
 
 ## Build generated
